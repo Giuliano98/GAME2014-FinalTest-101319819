@@ -959,6 +959,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   onScreenControls: {fileID: 0}
   miniMap: {fileID: 0}
+  soundManager: {fileID: 0}
 --- !u!4 &421963887
 Transform:
   m_ObjectHideFlags: 0
@@ -1006,8 +1007,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   fireDelay: 30
   bulletSpawn: {fileID: 383008229}
-  bulletPrefab: {fileID: 0}
-  bulletParent: {fileID: 0}
 --- !u!1 &494033582
 GameObject:
   m_ObjectHideFlags: 0
