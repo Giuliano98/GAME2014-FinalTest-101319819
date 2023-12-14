@@ -5,13 +5,12 @@ using UnityEngine;
 public class NewPlatform : MonoBehaviour
 {
     private Vector3 originalScale;
+    private float scalePercentage = 1.0f;
+    public bool isPlayerOnPlatform = false;
+
     public float moveDistance = 1.0f;
     public float moveSpeed = 1.0f;
-
-    private bool isShrinking = false;
-    private bool isRestoring = false;
-    private float shrinkTimer = 0f;
-    private const float shrinkDuration = 1.6f;
+    public Rigidbody2D playerRigidbody; // Reference to the player's Rigidbody2D
 
     private void Start()
     {
@@ -23,48 +22,41 @@ public class NewPlatform : MonoBehaviour
         float newY = Mathf.Sin(Time.time * moveSpeed) * moveDistance;
         transform.position = new Vector3(transform.position.x, newY, transform.position.z);
 
-        if (isShrinking)
+        if (isPlayerOnPlatform)
         {
-            ShrinkPlatform();
+            scalePercentage = Mathf.Clamp01(scalePercentage - Time.deltaTime * 0.5f);
+
+            if (scalePercentage <= 0.01f)
+            {
+                HandleShrinking();
+            }
         }
-        else if (isRestoring)
+        else
         {
-            RestorePlatform();
+            scalePercentage = Mathf.Clamp01(scalePercentage + Time.deltaTime * 2.0f);
+
+            if (scalePercentage >= 0.99f)
+            {
+                HandleRestoring();
+            }
         }
+
+        transform.localScale = originalScale * scalePercentage; // Set the scale based on percentage
     }
 
-    public void StartShrinking()
+    private void HandleShrinking()
     {
-        isShrinking = true;
-        isRestoring = false;
+        GetComponent<Collider2D>().enabled = false; // Disable collision
+
+        // Adjust player's gravity scale to counteract the jump
+        playerRigidbody.gravityScale *= 0.5f; // Adjust the multiplier as needed
     }
 
-    public void StartRestoring()
+    private void HandleRestoring()
     {
-        isShrinking = false;
-        isRestoring = true;
-    }
+        GetComponent<Collider2D>().enabled = true; // Enable collision
 
-    private void ShrinkPlatform()
-    {
-        shrinkTimer += Time.deltaTime;
-        float t = Mathf.Clamp01(shrinkTimer / shrinkDuration);
-        transform.localScale = Vector3.Lerp(originalScale, Vector3.zero, t);
-
-        if (t >= 1f)
-        {
-            Invoke(nameof(StartRestoring), 2f);
-        }
-    }
-
-    private void RestorePlatform()
-    {
-        transform.localScale = Vector3.Lerp(transform.localScale, originalScale, Time.deltaTime * 2f);
-
-        if (Vector3.Distance(transform.localScale, originalScale) < 0.01f)
-        {
-            transform.localScale = originalScale;
-            isRestoring = false;
-        }
+        // Revert player's gravity scale to normal
+        playerRigidbody.gravityScale = 1.0f;
     }
 }

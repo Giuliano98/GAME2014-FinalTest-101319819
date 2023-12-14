@@ -9,12 +9,16 @@ public class CheckTrigger : MonoBehaviour
     private void OnTriggerEnter2D(Collider2D other)
     {
         if (other.CompareTag("Player"))
-            platform.StartShrinking();
+        {
+            platform.isPlayerOnPlatform = true;
+        }
     }
 
     private void OnTriggerExit2D(Collider2D other)
     {
         if (other.CompareTag("Player"))
-            platform.StartRestoring();
+        {
+            platform.isPlayerOnPlatform = false;
+        }
     }
 }

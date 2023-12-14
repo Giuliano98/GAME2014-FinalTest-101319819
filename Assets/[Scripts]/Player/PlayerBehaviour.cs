@@ -10,6 +10,7 @@ using UnityEngine.InputSystem;
 public class PlayerBehaviour : MonoBehaviour
 {
     public InputAction move;
+    public float maxYVelocity = 10f;
 
     [Header("Movement Properties")]
     public float horizontalForce;
@@ -97,6 +98,8 @@ public class PlayerBehaviour : MonoBehaviour
             BulletManager.Instance().DestroyPool();
             SceneManager.LoadScene("End");
         }
+
+        CapYVelocity();
     }
 
     // Update is called once per frame
@@ -234,5 +237,12 @@ public class PlayerBehaviour : MonoBehaviour
             soundManager.PlaySoundFX(Sound.HURT, Channel.PLAYER_HURT_FX);
             ShakeCamera();
         }
+    }
+
+    void CapYVelocity()
+    {
+        Vector2 velocity = rb2D.velocity;
+        velocity.y = Mathf.Clamp(velocity.y, -maxYVelocity, maxYVelocity);
+        rb2D.velocity = velocity;
     }
 }
