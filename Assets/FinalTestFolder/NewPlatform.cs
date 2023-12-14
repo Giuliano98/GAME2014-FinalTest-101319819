@@ -7,7 +7,9 @@ public class NewPlatform : MonoBehaviour
     private Vector3 originalScale;
     public float moveDistance = 1.0f;
     public float moveSpeed = 1.0f;
+
     private bool isShrinking = false;
+    private bool isRestoring = false;
     private float shrinkTimer = 0f;
     private const float shrinkDuration = 1.6f;
 
@@ -22,33 +24,47 @@ public class NewPlatform : MonoBehaviour
         transform.position = new Vector3(transform.position.x, newY, transform.position.z);
 
         if (isShrinking)
+        {
             ShrinkPlatform();
-        else
+        }
+        else if (isRestoring)
+        {
             RestorePlatform();
+        }
     }
 
-    public void StartShrinking() => isShrinking = true;
+    public void StartShrinking()
+    {
+        isShrinking = true;
+        isRestoring = false;
+    }
 
-    public void StartRestoring() => isShrinking = false;
+    public void StartRestoring()
+    {
+        isShrinking = false;
+        isRestoring = true;
+    }
 
     private void ShrinkPlatform()
     {
         shrinkTimer += Time.deltaTime;
         float t = Mathf.Clamp01(shrinkTimer / shrinkDuration);
         transform.localScale = Vector3.Lerp(originalScale, Vector3.zero, t);
-        if (t >= 1f) Invoke(nameof(StartRestoring), 2f);
+
+        if (t >= 1f)
+        {
+            Invoke(nameof(StartRestoring), 2f);
+        }
     }
 
     private void RestorePlatform()
     {
-        //transform.localScale = Vector3.Lerp(transform.localScale, originalScale, Time.deltaTime * 2f);
         transform.localScale = Vector3.Lerp(transform.localScale, originalScale, Time.deltaTime * 2f);
 
-        // Check if the scale is close to the original scale before allowing shrinking again
         if (Vector3.Distance(transform.localScale, originalScale) < 0.01f)
         {
-            transform.localScale = originalScale; // Ensure it's precisely the original scale
-            isShrinking = false; // Stop shrinking
+            transform.localScale = originalScale;
+            isRestoring = false;
         }
     }
 }
