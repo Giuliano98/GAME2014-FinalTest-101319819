@@ -4,10 +4,14 @@ using Cinemachine;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using UnityEngine.InputSystem;
+
 
 public class PlayerBehaviour : MonoBehaviour
 {
-    [Header("Movement Properties")] 
+    public InputAction move;
+
+    [Header("Movement Properties")]
     public float horizontalForce;
     public float horizontalSpeed;
     public float verticalForce;
@@ -17,15 +21,15 @@ public class PlayerBehaviour : MonoBehaviour
     public LayerMask groundLayerMask; // the stuff we can collide with
     public bool isGrounded;
 
-    [Header("Animations")] 
+    [Header("Animations")]
     public Animator animator;
     public PlayerAnimationState playerAnimationState;
 
-    [Header("Dust Trail Effect")] 
+    [Header("Dust Trail Effect")]
     public ParticleSystem dustTrail;
     public Color dustTrailColour;
 
-    [Header("Screen Shake Properties")] 
+    [Header("Screen Shake Properties")]
     public CinemachineVirtualCamera playerCamera;
     public CinemachineBasicMultiChannelPerlin perlin;
     public float shakeIntensity;
@@ -33,28 +37,38 @@ public class PlayerBehaviour : MonoBehaviour
     public float shakeTimer;
     public bool isCameraShaking;
 
-    [Header("Health System")] 
+    [Header("Health System")]
     public HealthBarController health;
     public LifeCounterController life;
     public DeathPlaneController deathPlane;
 
-    [Header("Controls")] 
+    [Header("Controls")]
     public Joystick leftStick;
     [Range(0.1f, 1.0f)]
     public float verticalThreshold;
 
-    private Rigidbody2D rigidbody2D;
+    private Rigidbody2D rb2D;
     private SoundManager soundManager;
+
+    void OnEnable()
+    {
+        move.Enable();
+    }
+    void OnDisable()
+    {
+        move.Disable();
+    }
 
     void Start()
     {
-        rigidbody2D = GetComponent<Rigidbody2D>();
+        rb2D = GetComponent<Rigidbody2D>();
         animator = GetComponent<Animator>();
         health = FindObjectOfType<PlayerHealth>().GetComponent<HealthBarController>();
         life = FindObjectOfType<LifeCounterController>();
         deathPlane = FindObjectOfType<DeathPlaneController>();
         soundManager = FindObjectOfType<SoundManager>();
-        leftStick = (Application.isMobilePlatform) ? GameObject.Find("LeftStick").GetComponent<Joystick>() : null;
+        //leftStick = (Application.isMobilePlatform) ? GameObject.Find("LeftStick").GetComponent<Joystick>() : null;
+        //leftStick = GameObject.Find("LeftStick").GetComponent<Joystick>();
 
         dustTrail = GetComponentInChildren<ParticleSystem>();
 
@@ -110,18 +124,20 @@ public class PlayerBehaviour : MonoBehaviour
 
     private void Move()
     {
-        var x = Input.GetAxisRaw("Horizontal") + ((Application.isMobilePlatform) ? leftStick.Horizontal : 0.0f);
-
+        //var x = Input.GetAxisRaw("Horizontal") + ((Application.isMobilePlatform) ? leftStick.Horizontal : 0.0f);
+        //var x = Input.GetAxisRaw("Horizontal") + (leftStick.Horizontal);
+        var temp = move.ReadValue<Vector2>();
+        var x = temp.x;
         if (x != 0.0f)
         {
             Flip(x);
 
             x = (x > 0.0) ? 1.0f : -1.0f; // sanitizing x
 
-            rigidbody2D.AddForce(Vector2.right * x * horizontalForce * ((isGrounded) ? 1.0f : airFactor));
+            rb2D.AddForce(Vector2.right * x * horizontalForce * ((isGrounded) ? 1.0f : airFactor));
 
-            var clampedXVelocity = Mathf.Clamp(rigidbody2D.velocity.x, -horizontalSpeed, horizontalSpeed);
-            rigidbody2D.velocity = new Vector2(clampedXVelocity, rigidbody2D.velocity.y);
+            var clampedXVelocity = Mathf.Clamp(rb2D.velocity.x, -horizontalSpeed, horizontalSpeed);
+            rb2D.velocity = new Vector2(clampedXVelocity, rb2D.velocity.y);
 
             ChangeAnimation(PlayerAnimationState.RUN);
 
@@ -151,11 +167,13 @@ public class PlayerBehaviour : MonoBehaviour
 
     private void Jump()
     {
-        var y = Input.GetAxis("Jump") + ((Application.isMobilePlatform) ? leftStick.Vertical : 0.0f);
-
+        //var y = Input.GetAxis("Jump") + ((Application.isMobilePlatform) ? leftStick.Vertical : 0.0f);
+        //var y = Input.GetAxis("Jump") + (leftStick.Vertical);
+        var temp = move.ReadValue<Vector2>();
+        var y = temp.y;
         if ((isGrounded) && (y > verticalThreshold))
         {
-            rigidbody2D.AddForce(Vector2.up * verticalForce, ForceMode2D.Impulse);
+            rb2D.AddForce(Vector2.up * verticalForce, ForceMode2D.Impulse);
             soundManager.PlaySoundFX(Sound.JUMP, Channel.PLAYER_SOUND_FX);
         }
     }
@@ -190,10 +208,10 @@ public class PlayerBehaviour : MonoBehaviour
 
     void OnCollisionEnter2D(Collision2D other)
     {
-        if(other.gameObject.CompareTag("Enemy"))
+        if (other.gameObject.CompareTag("Enemy"))
         {
             health.TakeDamage(20);
-            
+
             soundManager.PlaySoundFX(Sound.HURT, Channel.PLAYER_HURT_FX);
             ShakeCamera();
         }
