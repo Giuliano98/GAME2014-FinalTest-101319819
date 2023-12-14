@@ -4,18 +4,19 @@ using UnityEngine;
 
 public class NewPlatform : MonoBehaviour
 {
-    private Vector3 originalScale;
     public bool isPlayerOnPlatform = false;
 
+    [Header("Movement")]
     public float moveDistance = 1.0f;
     public float moveSpeed = 1.0f;
-
+    [Header("Shrinking")]
     public float ShrinkingTime = 2f;
     public float ResizedTime = 1.5f;
 
-    private Collider2D platformCollider;
-    private SpriteRenderer platformRenderer;
-    private float initialY;
+    Vector3 originalScale;
+    Collider2D platformCollider;
+    SpriteRenderer platformRenderer;
+    float initialY;
 
     private void Start()
     {
@@ -27,14 +28,17 @@ public class NewPlatform : MonoBehaviour
 
     private void Update()
     {
+        // TODO: Vertical movement
         float newY = initialY + Mathf.Sin(Time.time * moveSpeed) * moveDistance;
         transform.position = new Vector3(transform.position.x, newY, transform.position.z);
 
+        //TODO: Logic for shrinking
         UpdateScale();
     }
 
     private void UpdateScale()
     {
+        //TODO: Set Min and Max for the scale multiplayer 0.01f to 1f
         float scalePercentage = CalculateScalePercentage();
         //TODO: Illusion for platform disappearing 
         if (scalePercentage <= 0.02f)
