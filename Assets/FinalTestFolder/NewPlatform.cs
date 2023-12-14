@@ -5,58 +5,61 @@ using UnityEngine;
 public class NewPlatform : MonoBehaviour
 {
     private Vector3 originalScale;
-    private float scalePercentage = 1.0f;
     public bool isPlayerOnPlatform = false;
 
     public float moveDistance = 1.0f;
     public float moveSpeed = 1.0f;
-    public Rigidbody2D playerRigidbody; // Reference to the player's Rigidbody2D
+
+    public float ShrinkingTime = 2f;
+    public float ResizedTime = 1.5f;
+
+    private Collider2D platformCollider;
+    private SpriteRenderer platformRenderer;
+    private float initialY;
 
     private void Start()
     {
         originalScale = transform.localScale;
+        platformCollider = GetComponent<Collider2D>();
+        platformRenderer = GetComponent<SpriteRenderer>();
+        initialY = transform.position.y;
     }
 
     private void Update()
     {
-        float newY = Mathf.Sin(Time.time * moveSpeed) * moveDistance;
+        float newY = initialY + Mathf.Sin(Time.time * moveSpeed) * moveDistance;
         transform.position = new Vector3(transform.position.x, newY, transform.position.z);
 
+        UpdateScale();
+    }
+
+    private void UpdateScale()
+    {
+        float scalePercentage = CalculateScalePercentage();
+        //TODO: Illusion for platform disappearing 
+        if (scalePercentage <= 0.02f)
+        {
+            platformCollider.enabled = false;
+            platformRenderer.enabled = false;
+        }
+        else if (scalePercentage >= 0.06f)
+        {
+            platformCollider.enabled = true;
+            platformRenderer.enabled = true;
+        }
+
+        transform.localScale = originalScale * scalePercentage; // Set current scale
+    }
+
+    private float CalculateScalePercentage()
+    {
+        float newScale;
         if (isPlayerOnPlatform)
-        {
-            scalePercentage = Mathf.Clamp01(scalePercentage - Time.deltaTime * 0.5f);
-
-            if (scalePercentage <= 0.01f)
-            {
-                HandleShrinking();
-            }
-        }
+            newScale = Mathf.Max(0.01f, transform.localScale.y - Time.deltaTime / ShrinkingTime);
         else
-        {
-            scalePercentage = Mathf.Clamp01(scalePercentage + Time.deltaTime * 2.0f);
+            newScale = Mathf.Min(1.0f, transform.localScale.y + Time.deltaTime / ResizedTime);
 
-            if (scalePercentage >= 0.99f)
-            {
-                HandleRestoring();
-            }
-        }
-
-        transform.localScale = originalScale * scalePercentage; // Set the scale based on percentage
+        return newScale;
     }
 
-    private void HandleShrinking()
-    {
-        GetComponent<Collider2D>().enabled = false; // Disable collision
-
-        // Adjust player's gravity scale to counteract the jump
-        playerRigidbody.gravityScale *= 0.5f; // Adjust the multiplier as needed
-    }
-
-    private void HandleRestoring()
-    {
-        GetComponent<Collider2D>().enabled = true; // Enable collision
-
-        // Revert player's gravity scale to normal
-        playerRigidbody.gravityScale = 1.0f;
-    }
 }

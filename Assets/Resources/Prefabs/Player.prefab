@@ -4886,7 +4886,7 @@ SpriteRenderer:
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 739541023
-  m_SortingLayer: 5
+  m_SortingLayer: 6
   m_SortingOrder: 0
   m_Sprite: {fileID: 21300000, guid: 888306450f32d3b47b1d7fb2bdca27a8, type: 3}
   m_Color: {r: 0, g: 1, b: 0.08234525, a: 1}
@@ -4936,7 +4936,7 @@ Transform:
   - {fileID: 618818917}
   - {fileID: 1199309752}
   m_Father: {fileID: 0}
-  m_RootOrder: 4
+  m_RootOrder: 5
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!212 &6897450390857904522
 SpriteRenderer:
@@ -4977,7 +4977,7 @@ SpriteRenderer:
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 1695070179
-  m_SortingLayer: 4
+  m_SortingLayer: 5
   m_SortingOrder: 0
   m_Sprite: {fileID: 21300000, guid: 72de0c64f2c6a498096698322c976a67, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
@@ -5059,6 +5059,56 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 03625bea52dd7134298565a6e075f69c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  move:
+    m_Name: Move
+    m_Type: 0
+    m_ExpectedControlType: 
+    m_Id: c8b18b21-a632-41d1-8dd2-8f1a78846470
+    m_Processors: 
+    m_Interactions: 
+    m_SingletonActionBindings:
+    - m_Name: 2D Vector
+      m_Id: fc349e83-f343-4968-8692-967eb3e70ee4
+      m_Path: 2DVector
+      m_Interactions: 
+      m_Processors: 
+      m_Groups: 
+      m_Action: Move
+      m_Flags: 4
+    - m_Name: up
+      m_Id: 92cf8ce5-6943-4154-aef3-308e7950b103
+      m_Path: <Keyboard>/w
+      m_Interactions: 
+      m_Processors: 
+      m_Groups: 
+      m_Action: Move
+      m_Flags: 8
+    - m_Name: down
+      m_Id: 17a5a915-9dae-4942-92e7-90dc319291a9
+      m_Path: 
+      m_Interactions: 
+      m_Processors: 
+      m_Groups: 
+      m_Action: Move
+      m_Flags: 8
+    - m_Name: left
+      m_Id: c03fdad8-7c3e-45b9-b27c-7ec93339eba1
+      m_Path: <Keyboard>/a
+      m_Interactions: 
+      m_Processors: 
+      m_Groups: 
+      m_Action: Move
+      m_Flags: 8
+    - m_Name: right
+      m_Id: 5333d422-4020-4454-a334-ad118fe32ff0
+      m_Path: <Keyboard>/d
+      m_Interactions: 
+      m_Processors: 
+      m_Groups: 
+      m_Action: Move
+      m_Flags: 8
+    m_Flags: 0
+  maxYVelocity: 15
   horizontalForce: 50
   horizontalSpeed: 10
   verticalForce: 15
@@ -5073,6 +5123,12 @@ MonoBehaviour:
   playerAnimationState: 0
   dustTrail: {fileID: 0}
   dustTrailColour: {r: 0.94117653, g: 0.7254902, b: 0.5372549, a: 1}
+  playerCamera: {fileID: 0}
+  perlin: {fileID: 0}
+  shakeIntensity: 3
+  shakeDuration: 0.5
+  shakeTimer: 0.5
+  isCameraShaking: 0
   health: {fileID: 0}
   life: {fileID: 0}
   deathPlane: {fileID: 0}
