@@ -1,3 +1,10 @@
+/**********************************************
+* Source File: NewPlatform.cs
+* Student Name: Giuliano Venturo Gonzales
+* Student ID: 101319819
+* Program Description: trigger checking for platform
+*
+**********************************************/
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -7,7 +14,7 @@ public class CheckTrigger : MonoBehaviour
     public AudioSource src;
     public AudioClip Shirking, Resized;
 
-    //TODO: Triggers for the child gameobject in the platform
+    //TODO: Triggers for the child gameobject in the platform and sfx
     public NewPlatform platform;
     private void OnTriggerEnter2D(Collider2D other)
     {
